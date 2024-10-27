@@ -72,7 +72,7 @@ def redirect_check(response, server_n, path):
         return False, server_n, path
 
     except Exception as exception:
-        print("here1 up", exception)
+        # print("here1 up", exception)
         return False, server_n, path
 
 def send_request(target, port, path, request, from_redirection, depth=0):
@@ -272,7 +272,7 @@ def send_request_and_fingerprint(resp_tuple, server_n, server_p, path):
 
         return predicted_server
     except Exception as exception:
-        print(exception)
+        # print(exception)
         return "exception"
 
 
@@ -615,7 +615,11 @@ def find_doh_server(found_server_list, target, port = 443):
         success_query_header = success_query_header.replace("\'", "\"")
         # fp_header_str = str().replace("\'", "\"")
         # dict_test = json.loads(fp_header_str)
-        header_sim = compare_dict_similarity(fp_header, json.loads(success_query_header))
+        if fp_header == '':
+            print('目标服务器doh响应出错！')
+            header_sim = 0
+        else:
+            header_sim = compare_dict_similarity(fp_header, json.loads(success_query_header))
         # header_sim = jaccard_similarity(str(fp_header), success_query_header)
         
         total_sim = header_sim + server_sim
@@ -623,7 +627,7 @@ def find_doh_server(found_server_list, target, port = 443):
             max_sim = total_sim
             max_server = server_key
     print(f'doh check: sim of header is {max_sim}')
-    thresh = 0.8
+    thresh = 0.65
     if max_sim > thresh:
         return 'doh_' + max_server
         pass
@@ -684,7 +688,7 @@ def find_dns_server(found_server_list, target, port = 443):
         else:
             return 'dns_' + str(rdata_list[0]).strip('\"')
     except:
-        print('dns 解析失败')
+        # print('dns 解析失败')
         return 'dns_unknown'
     
 
@@ -756,7 +760,7 @@ def layyerx(host, port):
     target_host = host
     target_port = port
     if target_host == None:
-        print("Please use the -t flag and provide a hostname.")
+        # print("Please use the -t flag and provide a hostname.")
         exit()
 
     # call fingerprint function.
@@ -786,6 +790,5 @@ if __name__ == '__main__':
     arg = arg_parse()
     target_host = arg.target
     target_port = arg.port
-    
     layyerx(target_host, target_port)
 
